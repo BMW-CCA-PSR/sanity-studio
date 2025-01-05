@@ -6,13 +6,13 @@ This is the Sanity Studio for the [Sanity.io](https://www.sanity.io/) backend fo
 To run the studio locally, you'll need to have [Node.js](https://nodejs.org/) installed. Then, run the following commands:
 
 ```bash
-yarn install
-yarn dev
+npm install
+npm dev
 ```
 
 ## Deploying
 The studio is deployed Sanity hosted backend. To deploy, run the following command:
 
 ```bash
-sanity deploy
+npm deploy
 ```
