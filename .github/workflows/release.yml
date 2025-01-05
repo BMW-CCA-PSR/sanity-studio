@@ -1,0 +1,97 @@
+name: Release 🚀
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  tag_release:
+    name: Tag Release 🏷️
+    runs-on: ubuntu-latest
+    outputs:
+      tag_exists: ${{ steps.set_tag_exists.outputs.tag_exists }}
+      version: ${{ steps.extract_version.outputs.version }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from package.json
+        id: extract_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Version extracted: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          TAG="v${{ steps.extract_version.outputs.version }}"
+          if git rev-parse "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            exit 0
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create and push tag
+        if: steps.check_tag.outputs.exists == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v${{ steps.extract_version.outputs.version }}"
+          git tag $TAG
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
+          git push origin $TAG
+          echo "tag_created=true" >> $GITHUB_OUTPUT
+
+      - name: Set tag_exists output
+        id: set_tag_exists
+        run: |
+          if [ "${{ steps.check_tag.outputs.exists }}" = "false" ]; then
+            echo "tag_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "tag_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+  publish_release:
+    name: Publish and Deploy 🚀
+    needs: tag_release
+    if: needs.tag_release.outputs.tag_exists == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        run: npm install
+
+      - name: Deploy to Sanity
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_DEPLOY_TOKEN }}
+        run: npm run deploy
+
+      - name: Create a GitHub release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ needs.tag_release.outputs.version }}
+          release_name: v${{ needs.tag_release.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
