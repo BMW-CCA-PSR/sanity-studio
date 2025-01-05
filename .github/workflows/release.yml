@@ -81,10 +81,10 @@ jobs:
           node-version: '20'
 
       - name: Install deps
-        run: yarn install
+        run: npm install
 
       - name: Deploy to Sanity
-        run: yarn run deploy
+        run: npm run deploy
         env:
           SANITY_AUTH_TOKEN: ${{ secrets.SANITY_DEPLOY_TOKEN }}
 
