@@ -81,14 +81,12 @@ jobs:
           node-version: '20'
 
       - name: Install deps
-        run: npm install
+        run: yarn install
 
       - name: Deploy to Sanity
-        uses: sanity-io/github-action-sanity@v0.7-alpha
+        run: yarn run deploy
         env:
           SANITY_AUTH_TOKEN: ${{ secrets.SANITY_DEPLOY_TOKEN }}
-        with:
-          args: deploy
 
       - name: Create a GitHub release
         uses: actions/create-release@v1
