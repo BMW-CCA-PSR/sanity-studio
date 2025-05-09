@@ -32,7 +32,6 @@ export default {
         title: 'Slug',
         description: 'The unique address that the article will live at. (e.g. "/zundfolge/<year>/<month>/your-article")',
         options: {
-          source: 'title',
           maxLength: 96,
           slugify: input => input
           .toLowerCase()

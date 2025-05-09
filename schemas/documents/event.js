@@ -49,7 +49,6 @@ export default {
             title: 'Slug',
             description: 'The unique address that the event will live at. (e.g. "/events/<year>/<month>/your-event")',
             options: {
-                source: 'title',
                 maxLength: 96,
                 slugify: input => input
                 .toLowerCase()
