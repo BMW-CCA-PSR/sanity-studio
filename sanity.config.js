@@ -1,10 +1,9 @@
 // sanity.config.js
 import { defineConfig } from "sanity";
-import { deskTool } from 'sanity/desk'
+import { structureTool } from "sanity/structure";
 import { defaultDocumentNode } from "./src/components/previewIFrame";
 import { unsplashImageAsset } from "sanity-plugin-asset-source-unsplash";
-import { contentGraphView } from "sanity-plugin-graph-view";
-import {media} from 'sanity-plugin-media'
+import { media } from 'sanity-plugin-media'
 import schemas from "./schemas/schema";
 import deskStructure from "./deskStructure";
 
@@ -13,12 +12,11 @@ export default defineConfig({
   projectId: "clgsgxc0",
   dataset: "production",
   plugins: [
-    deskTool({
+    structureTool({
       defaultDocumentNode,
       structure: deskStructure,
     }),
     unsplashImageAsset(),
-    contentGraphView({}),
     media()
   ],
   schema: {

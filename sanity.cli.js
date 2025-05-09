@@ -6,5 +6,5 @@ export default defineCliConfig({
     projectId: 'clgsgxc0',
     dataset: 'production'
   },
-  studioHost: 'https://bmwccapsr.sanity.studio/'
+  studioHost: 'bmwccapsr'
 })
